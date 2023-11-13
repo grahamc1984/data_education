@@ -24,6 +24,21 @@ programme_relations = programme_relations.rename(columns={'Module_id':'ModuleId'
 schools = schools.drop(columns=['SapObjectId'])
 schools = schools.rename(columns={'Id':'SchoolId','Faculty_id':'FacultyId','Code':'ProgrammeSchoolCode','Name':'ProgrammeSchoolName'})
 
+#some data checking.
+#make sure all ModuleCode follow the format LLLNNNN where LLL forms a 3 letter module name and NNNN is numberical code
+import re #do this via regex
+module_codes = modules2023['ModuleCode'].values
+wrong = 0
+for module_code in module_codes:
+    if not re.match ('^[A-Z]{3}[0-9]{4}',module_code):
+        wrong +=1
+print('there are {} incorrectly formated module codes'.format(wrong))
+
+#we will remove any modules with a SchoolCode of D-HSSO as these seem to be dummy modules for pre-registration.
+before = len(modules2023)
+modules2023 = modules2023[modules2023['ModuleSchoolCode']!='D-HSSO']
+print('removed {} entries with module code D-HSSO'.format(before - len(modules2023)))
+
 
 print('there are a total of {} modules <-> programme pairings in the modules <-> programme list from all years.'.format(programme_relations.shape[0]))
 
